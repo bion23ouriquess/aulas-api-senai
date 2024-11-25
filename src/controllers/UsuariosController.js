@@ -23,19 +23,19 @@ class UsuariosController {
       ]);
 
       resp.send(resultado);
-    } catch (erro) {
+    } catch (error) {
       if (error.code === "ER_DUP_ENTRY") {
         resp.status(400).send("Email já cadastrado.");
         return;
       }
-      resp.status(500).send(erro);
+      resp.status(500).send(error);
     }
   }
 
   async listar(req, resp) {
     try {
       const conexao = await new ConexaoMySql().getConexao();
-      const comandoSql = " SELECT * FROM usuarios WHERE nome LIKE ?";
+      const comandoSql = "SELECT * FROM usuarios WHERE nome LIKE ?";
 
       const filtro = req.query.filtro || "";
       const [resultado] = await conexao.execute(comandoSql, [`%${filtro}%`]);
@@ -54,13 +54,14 @@ class UsuariosController {
     try {
       const usuarioEditar = req.body;
 
-      if (!usuarioEditar.nome || !usuarioEditar.nome || !usuarioEditar.email) {
-        resp.status(400).send("Os campos ID, nome e email são obrigatórios.");
+      if (!usuarioEditar.id || !usuarioEditar.nome || !usuarioEditar.email) {
+        resp.status(400).send("Os campos id, nome e email são obrigatórios.");
         return;
       }
 
       const conexao = await new ConexaoMySql().getConexao();
-      const comandoSql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
+      const comandoSql =
+        "UPDATE usuarios SET nome = ?, email = ?, foto = ? WHERE id = ?";
 
       const [resultado] = await conexao.execute(comandoSql, [
         usuarioEditar.nome,
@@ -77,12 +78,10 @@ class UsuariosController {
 
   async excluir(req, resp) {
     try {
-      const idUsuario = req.params.id;
-
       const conexao = await new ConexaoMySql().getConexao();
-      const comandoSql = "DELETE FROM usuarios WHERE id =?";
 
-      const [resultado] = await conexao.execute(comandoSql, [idUsuario]);
+      const comandoSql = "DELETE FROM usuarios WHERE id = ?";
+      const [resultado] = await conexao.execute(comandoSql, [+req.params.id]);
 
       resp.send(resultado);
     } catch (error) {

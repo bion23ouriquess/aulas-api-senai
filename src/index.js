@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import UsuariosController from './controllers/UsuariosController.js';
+import ClientesController from './controllers/ClientesController.js';
 
 const app = express();
 app.use(express.json());
@@ -17,17 +18,15 @@ app.put('/usuarios', _usuariosController.atualizar);
 app.delete('/usuarios/:id', _usuariosController.excluir);
 
 
-// rotas de clientes 
+// rotas de /clientes
 
+const clientesController = new ClientesController();
 const listaClientes = [];
 
-app.get('/clientes', (req, res) => {
-    res.send(listaClientes);
-});
-app.post('/clientes', (req, res) => {
-    listaClientes.push(req.body)
-    res.send(listaClientes);
-});
+app.get('/clientes', clientesController.listarClientes);
+app.post('/clientes', clientesController.adicionarCliente);
+app.put('/clientes', clientesController.atualizarCliente);
+app.delete('/clientes/:id', clientesController.excluirCliente);
 
 const port = 3000;
 app.listen(port, () => {
