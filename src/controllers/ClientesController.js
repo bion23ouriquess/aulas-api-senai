@@ -1,4 +1,4 @@
-import ConexaoMySql from "../database/ConexaoMySql";
+import ConexaoMySql from "../database/ConexaoMySql.js";
 
 class ClientesController {
   async adicionarCliente(req, resp) {
@@ -6,9 +6,7 @@ class ClientesController {
       const novoCliente = req.body;
 
       if (!novoCliente.nome || !novoCliente.email || !novoCliente.cpf) {
-        resp
-          .status(400)
-          .send("Os campos nome, e-mail e CPF são obrigatórios.");
+        resp.status(400).send("Os campos nome, e-mail e CPF são obrigatórios.");
         return;
       }
 
@@ -52,28 +50,28 @@ class ClientesController {
 
   async atualizarCliente(req, resp) {
     try {
-        const clienteEditar = req.body;
-  
-        if (!clienteEditar.id || !clienteEditar.nome || !clienteEditar.email) {
-          resp.status(400).send("Os campos id, nome e email são obrigatórios.");
-          return;
-        }
-  
-        const conexao = await new ConexaoMySql().getConexao();
-        const comandoSql =
-          "UPDATE clientes SET nome = ?, email = ?, telefone = ? WHERE id = ?";
-  
-        const [resultado] = await conexao.execute(comandoSql, [
-          clienteEditar.nome,
-          clienteEditar.email,
-          clienteEditar.telefone,
-          clienteEditar.id,
-        ]);
-  
-        resp.send(resultado);
-      } catch (error) {
-        resp.status(500).send(error);
+      const clienteEditar = req.body;
+
+      if (!clienteEditar.id || !clienteEditar.nome || !clienteEditar.email) {
+        resp.status(400).send("Os campos id, nome e email são obrigatórios.");
+        return;
       }
+
+      const conexao = await new ConexaoMySql().getConexao();
+      const comandoSql =
+        "UPDATE clientes SET nome = ?, email = ?, telefone = ? WHERE id = ?";
+
+      const [resultado] = await conexao.execute(comandoSql, [
+        clienteEditar.nome,
+        clienteEditar.email,
+        clienteEditar.telefone,
+        clienteEditar.id,
+      ]);
+
+      resp.send(resultado);
+    } catch (error) {
+      resp.status(500).send(error);
+    }
   }
 
   async excluirCliente(req, resp) {
